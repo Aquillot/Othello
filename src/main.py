@@ -134,7 +134,7 @@ class TicTacToeGame(tk.Tk):
                 self.switch_player()
                 self._update_status(f"{self.current_player.name}'s Turn")
                 if self.current_player.is_ai:
-                    self.ai_move()
+                    self.after(100, self.ai_move)
 
     def _update_cell(self, clicked_button):
         """Update the UI when a move is made."""
@@ -214,8 +214,7 @@ class TicTacToeGame(tk.Tk):
         """Return True if the game is tied (board is full and no winner)."""
         return not self.game_won and all(move.symbol for row in self.board_state for move in row)
 
-    def minimax(self, depth, is_maximizing):
-        """Minimax algorithm to choose the best move for the AI."""
+    def minimax(self, depth, is_maximizing, alpha, beta):
         if self.has_winner():
             return 1 if self.current_player.symbol == 'O' else -1
         elif self.is_tie():
@@ -227,9 +226,12 @@ class TicTacToeGame(tk.Tk):
                 for col in range(self.board_size):
                     if self.board_state[row][col].symbol == "":
                         self.board_state[row][col] = Move(row, col, 'O')
-                        score = self.minimax(depth + 1, False)
+                        score = self.minimax(depth + 1, False, alpha, beta)
                         self.board_state[row][col] = Move(row, col)
                         best_score = max(score, best_score)
+                        alpha = max(alpha, best_score)
+                        if beta <= alpha:
+                            break
             return best_score
         else:
             best_score = float('inf')
@@ -237,9 +239,12 @@ class TicTacToeGame(tk.Tk):
                 for col in range(self.board_size):
                     if self.board_state[row][col].symbol == "":
                         self.board_state[row][col] = Move(row, col, 'X')
-                        score = self.minimax(depth + 1, True)
+                        score = self.minimax(depth + 1, True, alpha, beta)
                         self.board_state[row][col] = Move(row, col)
                         best_score = min(score, best_score)
+                        beta = min(beta, best_score)
+                        if beta <= alpha:
+                            break
             return best_score
 
     def best_move(self):
@@ -250,7 +255,7 @@ class TicTacToeGame(tk.Tk):
             for col in range(self.board_size):
                 if self.board_state[row][col].symbol == "":
                     self.board_state[row][col] = Move(row, col, 'O')
-                    score = self.minimax(0, False)
+                    score = self.minimax(0, False, -float('inf'), float('inf'))
                     self.board_state[row][col] = Move(row, col)
                     if score > best_score:
                         best_score = score
