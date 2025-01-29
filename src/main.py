@@ -36,7 +36,7 @@ class GameController:
         self.current_player = self.players[self.current_player_index]
         self.game_won = False
         self.winner_combination = []
-        self.ai_types = ["minimax", "random"]
+        self.ai_types = ["minimax", "random", "greedy"]
         self.player_ai_type = {player.symbol: "minimax" for player in self.players}
         self._initialize_board()
 
@@ -143,6 +143,37 @@ class GameController:
             return self.random_move()
         elif ai_type == "minimax":
             return self._minimax_best_move()
+        elif ai_type == "greedy":
+            return self.greedy_move()
+
+    def greedy_move(self):
+        # Check for a winning move for the AI
+        for r in range(self.board_size):
+            for c in range(self.board_size):
+                if self.board_state[r][c].symbol == "":  # Check if the cell is empty
+                    move = Move(r, c, self.current_player.symbol)
+                    self.board_state[r][c] = move
+                    if self.has_winner() == self.current_player.symbol:  # AI can win
+                        self.board_state[r][c] = Move(r, c, "")  # Reset move
+                        return r, c  # Return the winning move
+                    self.board_state[r][c] = Move(r, c, "")  # Reset move
+
+        # Check for a blocking move (if the opponent can win)
+        opponent = self.get_opponent(self.current_player)
+        for r in range(self.board_size):
+            for c in range(self.board_size):
+                if self.board_state[r][c].symbol == "":  # Check if the cell is empty
+                    move = Move(r, c, opponent.symbol)
+                    self.board_state[r][c] = move
+                    if self.has_winner() == opponent.symbol:  # Opponent can win
+                        self.board_state[r][c] = Move(r, c, "")  # Reset move
+                        return r, c  # Block the opponent's winning move
+                    self.board_state[r][c] = Move(r, c, "")  # Reset move
+
+        # If no winning or blocking move, pick the first available move
+        available_moves = [(r, c) for r in range(self.board_size) for c in range(self.board_size)
+                           if self.board_state[r][c].symbol == ""]
+        return available_moves[0] if available_moves else None  # Return the first available move
 
     def random_move(self):
         available_moves = [(r, c) for r in range(self.board_size) for c in range(self.board_size) if
@@ -260,12 +291,19 @@ class MenuBar(tk.Menu):
         ai_menu.add_cascade(label="Blue AI Type", menu=ai_blue_menu)
         # Make Minimax the default AI type for the red player
 
-        ai_red_menu.add_radiobutton(label="Minimax", command=lambda: self.controller.set_ai_type(0, "minimax"))
-        ai_red_menu.add_radiobutton(label="Random", command=lambda: self.controller.set_ai_type(0, "random"))
-        ai_blue_menu.add_radiobutton(label="Minimax", command=lambda: self.controller.set_ai_type(1, "minimax"))
-        ai_blue_menu.add_radiobutton(label="Random", command=lambda: self.controller.set_ai_type(1, "random"))
-        ai_red_menu.invoke(0)  # Set Minimax as the default AI type for the red player
-        ai_blue_menu.invoke(0)
+        ai_red_algo = tk.StringVar()
+        ai_blue_algo = tk.StringVar()
+        ai_red_menu.add_radiobutton(label="Minimax", variable=ai_red_algo, value="minimax")
+        ai_red_menu.add_radiobutton(label="Greedy", variable=ai_red_algo, value="greedy")
+        ai_red_menu.add_radiobutton(label="Random", variable=ai_red_algo, value="random")
+        ai_blue_menu.add_radiobutton(label="Minimax", variable=ai_blue_algo, value="minimax")
+        ai_blue_menu.add_radiobutton(label="Greedy", variable=ai_blue_algo, value="greedy")
+        ai_blue_menu.add_radiobutton(label="Random", variable=ai_blue_algo, value="random")
+        ai_red_algo.set("minimax")
+        ai_blue_algo.set("minimax")
+        ai_red_algo.trace("w", lambda *args: self.controller.set_ai_type(0, ai_red_algo.get()))
+        ai_blue_algo.trace("w", lambda *args: self.controller.set_ai_type(1, ai_blue_algo.get()))
+
         self.add_cascade(label="Game", menu=game_menu)
         self.add_cascade(label="AI", menu=ai_menu)
 
