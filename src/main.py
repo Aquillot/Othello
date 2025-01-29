@@ -36,7 +36,12 @@ class GameController:
         self.current_player = self.players[self.current_player_index]
         self.game_won = False
         self.winner_combination = []
+        self.ai_types = ["minimax", "random"]
+        self.player_ai_type = {player.symbol: "minimax" for player in self.players}
         self._initialize_board()
+
+    def set_ai_type(self, player_index, ai_type):
+        self.player_ai_type[self.players[player_index].symbol] = ai_type
 
     def _initialize_board(self):
         self.board_state = [[Move(row, col) for col in range(self.board_size)] for row in range(self.board_size)]
@@ -133,6 +138,18 @@ class GameController:
             return min_eval
 
     def best_move(self):
+        ai_type = self.player_ai_type[self.current_player.symbol]
+        if ai_type == "random":
+            return self.random_move()
+        elif ai_type == "minimax":
+            return self._minimax_best_move()
+
+    def random_move(self):
+        available_moves = [(r, c) for r in range(self.board_size) for c in range(self.board_size) if
+                           self.board_state[r][c].symbol == ""]
+        return random.choice(available_moves) if available_moves else None
+
+    def _minimax_best_move(self):
         best_value = float('-inf')
         best_move = None
         # Initialize alpha and beta for the search of the best move
@@ -232,10 +249,25 @@ class MenuBar(tk.Menu):
         self.parent = parent
 
         game_menu = tk.Menu(self, tearoff=0)
+        ai_menu = tk.Menu(self, tearoff=0)
+        ai_red_menu = tk.Menu(ai_menu, tearoff=0)
+        ai_blue_menu = tk.Menu(ai_menu, tearoff=0)
+
         game_menu.add_command(label="Play Again", command=self.reset_game)
         game_menu.add_command(label="Toggle Red AI", command=lambda: self.toggle_ai(0))
         game_menu.add_command(label="Toggle Blue AI", command=lambda: self.toggle_ai(1))
+        ai_menu.add_cascade(label="Red AI Type", menu=ai_red_menu)
+        ai_menu.add_cascade(label="Blue AI Type", menu=ai_blue_menu)
+        # Make Minimax the default AI type for the red player
+
+        ai_red_menu.add_radiobutton(label="Minimax", command=lambda: self.controller.set_ai_type(0, "minimax"))
+        ai_red_menu.add_radiobutton(label="Random", command=lambda: self.controller.set_ai_type(0, "random"))
+        ai_blue_menu.add_radiobutton(label="Minimax", command=lambda: self.controller.set_ai_type(1, "minimax"))
+        ai_blue_menu.add_radiobutton(label="Random", command=lambda: self.controller.set_ai_type(1, "random"))
+        ai_red_menu.invoke(0)  # Set Minimax as the default AI type for the red player
+        ai_blue_menu.invoke(0)
         self.add_cascade(label="Game", menu=game_menu)
+        self.add_cascade(label="AI", menu=ai_menu)
 
         parent.config(menu=self)
 
