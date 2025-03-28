@@ -1,7 +1,6 @@
 import tkinter as tk
-from tkinter import font
+from tkinter import font,PhotoImage
 from Structures import Move
-
 class GameBoard(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
@@ -9,18 +8,19 @@ class GameBoard(tk.Frame):
         self.parent = parent
         self.cells = {}
         self._initialize_gui()
+        
         self.pack(padx=15, pady=(0, 10))
 
     def _initialize_gui(self):
         for row in range(self.controller.board_size[0]):
             for col in range(self.controller.board_size[1]):
                 button = tk.Button(
-                    self, text="", font=font.Font(size=36, weight="bold"), width=2, height=1,
-                    highlightbackground="#fafbf8", highlightthickness=3, border=0
+                    self, text="", font=font.Font(size=36, weight="bold"), width=2, height=2,
+                    relief="flat", highlightthickness=0, activebackground="#0b2b0c", bg="#0b2b0c" 
                 )
                 self.cells[button] = (row, col)
                 button.bind("<ButtonPress-1>", self._handle_click)
-                button.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
+                button.grid(row=row, column=col, padx=0, pady=0, sticky="nsew")
 
     def _handle_click(self, event):
         button = event.widget
@@ -49,7 +49,7 @@ class GameBoard(tk.Frame):
     def _highlight_winning_cells(self):
         for button, pos in self.cells.items():
             if pos in self.controller.winner_combination:
-                button.config(highlightbackground="#27a327")
+                button.config(highlightbackground="#0b2b0c")
 
     def ai_move(self):
         if self.controller.current_player.is_ai:
@@ -61,7 +61,7 @@ class GameBoard(tk.Frame):
 
     def reset_board(self):
         for button in self.cells.keys():
-            button.config(text="", fg="black", highlightbackground="#fafbf8")
+            button.config(text="", fg="#0b2b0c", highlightbackground="#0b2b0c")
 
         # If the current player is an AI, make the AI move
         if self.controller.current_player.is_ai:

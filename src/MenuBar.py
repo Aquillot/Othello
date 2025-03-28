@@ -28,8 +28,8 @@ class MenuBar(tk.Menu):
         ai_blue_menu.add_radiobutton(label="Random", variable=ai_blue_algo, value="random")
         ai_red_algo.set("minimax")
         ai_blue_algo.set("minimax")
-        ai_red_algo.trace("w", lambda *args: self.controller.set_ai_type(0, ai_red_algo.get()))
-        ai_blue_algo.trace("w", lambda *args: self.controller.set_ai_type(1, ai_blue_algo.get()))
+        ai_red_algo.trace_add("write", lambda *args: self.controller.set_ai_type(0, ai_red_algo.get()))
+        ai_blue_algo.trace_add("write", lambda *args: self.controller.set_ai_type(1, ai_blue_algo.get()))
 
         self.add_cascade(label="Game", menu=game_menu)
         self.add_cascade(label="AI", menu=ai_menu)
@@ -39,10 +39,10 @@ class MenuBar(tk.Menu):
     def reset_game(self):
         self.controller.reset_game()
         self.parent.game_board.reset_board()
-        self.parent.update_status("Tic-Tac-Toe")
+        self.parent.update_status("Othello")
 
     def toggle_ai(self, index):
         self.controller.toggle_ai(index)
         if self.controller.current_player.is_ai:
-            self.parent.update_status(f"{self.controller.current_player.name}'s Turn")
+            self.parent.update_status(f"{self.controller.current_player.name}'s turn")
             self.parent.game_board.ai_move()

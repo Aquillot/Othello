@@ -1,5 +1,7 @@
 import random
 import tkinter as tk
+from PIL import Image, ImageTk
+
 
 from GameBoard import GameBoard
 from Structures import Player, Move
@@ -7,10 +9,10 @@ from StatusDisplay import StatusDisplay
 from MenuBar import MenuBar
 
 # Constants
-BOARD_SIZE = (3, 3)
+BOARD_SIZE = (8, 8)
 DEFAULT_PLAYERS = [
-    Player(symbol="X", name="Red", color="#d31626"),
-    Player(symbol="O", name="Blue", color="#0079c8"),
+    Player(symbol="🌑", name="White", color="#ffffff"),
+    Player(symbol="🌕", name="Black", color="#000000"),
 ]
 
 # ============================
@@ -90,6 +92,7 @@ class GameController:
             self.current_player = self.players[player_index]
 
     def minimax(self, depth, is_maximizing_player, alpha, beta):
+        # sourcery skip: avoid-builtin-shadow
         # If the game is won or finished, return a score
         if self.has_winner() == self.current_player.symbol:
             return 1  # AI wins
@@ -198,28 +201,67 @@ class GameController:
 # ====== Main Application =====
 # ============================
 
-class TicTacToeApp(tk.Tk):
+
+class OthelloApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("Tic-Tac-Toe")
 
-        self.controller = GameController()
-        self.status_display = StatusDisplay(self)
-        self.game_board = GameBoard(self, self.controller)
-        self.menu = MenuBar(self, self.controller)
+        self.title("Othello")
 
-    def update_status(self, message, color="black"):
+        # Charger l'image de fond initiale
+        self.bg_image = Image.open("./layout/fond_bois.png")
+        self.bg_image = self.bg_image.resize((self.winfo_screenwidth(), self.winfo_screenheight()), Image.Resampling.LANCZOS)
+        self.bg_image = ImageTk.PhotoImage(self.bg_image)
+
+        # Créer un Label pour l'image de fond
+        self.bg_label = tk.Label(self, image=self.bg_image)
+        self.bg_label.place(relwidth=1, relheight=1)  # Assurer que l'image occupe toute la fenêtre
+
+        # Initialiser les autres composants
+        self.controller = GameController()  # Tu dois avoir un GameController défini ailleurs
+        self.status_display = StatusDisplay(self)  # Assurez-vous que StatusDisplay est défini
+        self.game_board = GameBoard(self, self.controller)  # Assurez-vous que GameBoard est défini
+        self.menu = MenuBar(self, self.controller)  # Assurez-vous que MenuBar est défini
+
+        # Passer en mode plein écran
+        self.attributes("-fullscreen", True)
+        
+        # Mettre à jour la taille de la fenêtre en fonction de l'écran
+        self.update_window_size()
+
+        # Lier la touche Escape pour quitter le plein écran
+        self.bind("<Escape>", self.toggle_fullscreen)
+
+    def toggle_fullscreen(self, event=None):
+        """ Bascule le mode plein écran. """
+        current_state = self.attributes("-fullscreen")
+        self.attributes("-fullscreen", not current_state)
+        
+        # Mettre à jour la taille de la fenêtre lorsque l'on quitte ou entre en plein écran
+        self.update_window_size()
+
+    def update_window_size(self):
+        """ Met à jour la taille de la fenêtre pour qu'elle occupe tout l'écran. """
+        # Récupère la taille de l'écran
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        # Mettre à jour la taille de la fenêtre
+        self.geometry(f"{screen_width}x{screen_height}+0+0")
+
+    def update_status(self, message, color="white"):
         self.status_display.update_status(message, color)
 
 def main():
     # Print rules
-    print("Welcome to Tic-Tac-Toe!")
+    print("Welcome to Othello!")
     print("The game is played on a "+str(BOARD_SIZE[0])+"x"+str(BOARD_SIZE[1])+" board.")
     print("Turns alternate between Red (X) and Blue (O). Red goes first.")
     print("To enable AI for a player, use the Game menu.")
     print("To change the AI type, use the AI menu. (Minimax, Greedy, Random)")
 
-    app = TicTacToeApp()
+    
+    app = OthelloApp()
     app.mainloop()
 
 if __name__ == "__main__":
