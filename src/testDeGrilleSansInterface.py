@@ -1,4 +1,5 @@
-
+import numpy as np
+from arbre import Arbre
 from Structures import Player
 
 DEFAULT_PLAYERS = [
@@ -9,23 +10,36 @@ BOARD_SIZE = (3, 3)
 
 class othelloGame:
     def __init__(self, players=DEFAULT_PLAYERS, board_size=BOARD_SIZE):
-        self.grille = [[-1 for i in range(8)] for j in range(8)]
-        self.grille[3][3] = 0
-        self.grille[3][4] = 1
-        self.grille[4][3] = 1
-        self.grille[4][4] = 0
+        self.grille = [[-1 for i in range(4)] for j in range(4)]
+        # self.grille[3][3] = 0
+        # self.grille[3][4] = 1
+        # self.grille[4][3] = 1
+        # self.grille[4][4] = 0
+        self.grille[1][1] = 0
+        self.grille[1][2] = 1
+        self.grille[2][1] = 1
+        self.grille[2][2] = 0
         self.player_turn = 0
         self.players = players
         self.board_size = board_size
         self.coup_possible = [[], []]
         self.coup_jouer = [(3, 3), (3, 4), (4, 3), (4, 4)]
         self.afficher_aide = True
+        self.pos=Arbre()
+        self.compteur=0
+        self.grid=[[-1 for i in range(4)] for j in range(4)]
+        self.grid[1][1] = 0
+        self.grid[1][2] = 1
+        self.grid[2][1] = 1
+        self.grid[2][2] = 0
+        self.possibilites(self.grid,self.player_turn,self.pos)
+        print(self.compteur)
 
     def afficherGrille(self):
         if self.afficher_aide:
             self.connaitre_tous_les_coups_possibles_parcours_totale()
-        for i in range(8):
-            for j in range(8):
+        for i in range(4):
+            for j in range(4):
                 if self.grille[i][j] == -1:
                     if self.afficher_aide:
                         try:
@@ -60,12 +74,12 @@ class othelloGame:
         for dx, dy in directions:
             temp_dx = dx
             temp_dy = dy
-            while 0 <= x + temp_dx < 8 and 0 <= y + temp_dy < 8 and self.grille[x + temp_dx][y + temp_dy] == (player_turn + 1) % 2 : # Python permet de faire des comparaisons folles
+            while 0 <= x + temp_dx < 4 and 0 <= y + temp_dy < 4 and self.grille[x + temp_dx][y + temp_dy] == (player_turn + 1) % 2 : # Python permet de faire des comparaisons folles
                 # On continue dans cette direction
                 temp_dx += dx
                 temp_dy += dy
             # Si on est bloqué par un pion de notre couleur à la fin
-            if  0 <= x + temp_dx < 8 and 0 <= y + temp_dy < 8 and self.grille[x + temp_dx][y + temp_dy] == player_turn and (temp_dx != dx or temp_dy != dy):
+            if  0 <= x + temp_dx < 4 and 0 <= y + temp_dy < 4 and self.grille[x + temp_dx][y + temp_dy] == player_turn and (temp_dx != dx or temp_dy != dy):
                 # On retourne les pions
                 while self.grille[x][y] != player_turn:
                     if not verifier:
@@ -87,7 +101,7 @@ class othelloGame:
             x, y = coup
             for dx in range(-1, 2):
                 for dy in range(-1, 2):
-                    if 0 <= x + dx < 8 and 0 <= y + dy < 8 and self.grille[x + dx][y + dy] == -1:
+                    if 0 <= x + dx < 4 and 0 <= y + dy < 4 and self.grille[x + dx][y + dy] == -1:
                         if self.manger_ou_verifier_coup(x + dx, y + dy, verifier=True) > 0 and (x + dx, y + dy) not in coups_possibles:
                             coups_possibles.append((x + dx, y + dy))
         return coups_possibles
@@ -95,8 +109,8 @@ class othelloGame:
     def connaitre_tous_les_coups_possibles_parcours_totale(self, player_turn=None ):
         if player_turn is None:
             player_turn = self.player_turn
-        for x in range(8):
-            for y in range(8):
+        for x in range(4):
+            for y in range(4):
                 if self.grille[x][y] == -1:
                     nombre_pions_retournes = self.manger_ou_verifier_coup(x, y, verifier=True, player_turn=player_turn)
                     if nombre_pions_retournes > 0 :
@@ -116,8 +130,8 @@ class othelloGame:
 
     def gagnant(self):
         score = [0, 0]
-        for i in range(8):
-            for j in range(8):
+        for i in range(4):
+            for j in range(4):
                 if self.grille[i][j] != -1:
                     score[self.grille[i][j]] += 1
         if score[0] > score[1]:
@@ -133,6 +147,7 @@ class othelloGame:
             print("C'est au tour de ", self.players[self.player_turn].name)
             print("Les coups possibles sont : ", [i for i in self.coup_possible[self.player_turn] if type(i) == tuple])
             x, y = map(int, input("Entrez les coordonnées du coup à jouer : ").split())
+            print(self.coup_possible)
             if (x, y) in self.coup_possible[self.player_turn]:
                 self.jouer(x, y)
             else:
@@ -144,6 +159,54 @@ class othelloGame:
             print("Match nul")
         else:
             print("Le gagnant est ", self.players[gagnant].name)
+
+    def manger_ou_verifier_coup_test(self, x, y, player_turn, grid):
+        nbPionsRetournes = 0
+        directions = [(1, 0), (-1, 0), (0, 1), (0, -1), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+        for dx, dy in directions:
+            temp_dx = dx
+            temp_dy = dy
+            while 0 <= x + temp_dx < 4 and 0 <= y + temp_dy < 4 and grid[x + temp_dx][y + temp_dy] == (player_turn + 1) % 2 : 
+                temp_dx += dx
+                temp_dy += dy
+            if  0 <= x + temp_dx < 4 and 0 <= y + temp_dy < 4 and grid[x + temp_dx][y + temp_dy] == player_turn and (temp_dx != dx or temp_dy != dy):
+                while grid[x][y] != player_turn:
+                    x += dx
+                    y += dy
+                    nbPionsRetournes += 1
+        return nbPionsRetournes-1
+
+    def connaitre_tous_les_coups_possibles_parcours_totale_test(self, grid, player_turn ):
+        cp=[]
+        for x in range(4):
+            for y in range(4):
+                if grid[x][y] == -1:
+                    nombre_pions_retournes = self.manger_ou_verifier_coup_test(x, y, player_turn, grid)
+                    if nombre_pions_retournes > 0 :
+                        cp.append((x, y))
+                        cp.append(nombre_pions_retournes)
+        return cp
+
+    def jouer_test(self,grid,tour,tab,arbre):
+        g=[[-1 for i in range(4)] for j in range(4)]
+        for i in range(4):
+            for j in range(4):
+                g[i][j]=grid[i][j]
+        g[tab[0]][tab[1]]=tour
+        return self.possibilites(g,(tour + 1 ) % 2,arbre)
+
+    def possibilites(self,grid,tour,arbre):
+        cp=self.connaitre_tous_les_coups_possibles_parcours_totale_test(grid,tour)
+        self.compteur+=1
+        while(len(cp)!=0):
+            a=np.array([cp[0][0],cp[0][1]])
+            b=cp[1]
+            c=Arbre(a,b)
+            self.jouer_test(grid,tour,a,c)
+            arbre.ajoutEnfant(c)
+            cp.pop(0)
+            cp.pop(0)
+        return arbre
 
 if __name__ == "__main__":
     game = othelloGame()
