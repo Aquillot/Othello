@@ -210,7 +210,11 @@ class OthelloApp(tk.Tk):
 
         # Charger l'image de fond initiale
         self.bg_image = Image.open("./layout/fond_bois.png")
-        self.bg_image = self.bg_image.resize((self.winfo_screenwidth(), self.winfo_screenheight()), Image.Resampling.LANCZOS)
+        if hasattr(Image, 'Resampling'):
+            self.bg_image = self.bg_image.resize((self.winfo_screenwidth(), self.winfo_screenheight()), Image.Resampling.LANCZOS)
+        else:
+            self.bg_image = self.bg_image.resize((self.winfo_screenwidth(), self.winfo_screenheight()), Image.ANTIALIAS)        
+            
         self.bg_image = ImageTk.PhotoImage(self.bg_image)
 
         # Créer un Label pour l'image de fond

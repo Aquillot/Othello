@@ -16,7 +16,7 @@ class GameBoard(tk.Frame):
             for col in range(self.controller.board_size[1]):
                 button = tk.Button(
                     self, text="", font=font.Font(size=36, weight="bold"), width=2, height=2,
-                    relief="flat", highlightthickness=0, activebackground="#0b2b0c", bg="#0b2b0c" 
+                    relief="flat", highlightthickness=1, highlightbackground="black",activebackground="#1a6420", bg="#0b2b0c" 
                 )
                 self.cells[button] = (row, col)
                 button.bind("<ButtonPress-1>", self._handle_click)
