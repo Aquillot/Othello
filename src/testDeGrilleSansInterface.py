@@ -207,6 +207,41 @@ class TranspositionTable:
         return None
 
 
+def order_moves(board, moves, current_color):
+    """
+    Pour chaque coup, on calcule un score qui combine :
+      - Le poids de la case (issu de board.weights)
+      - La mobilité de l'adversaire après le coup (nombre de coups légaux pour l'adversaire, à inverser)
+      - Une évaluation courte de la position obtenue (en jouant le coup puis en évaluant avec profondeur 1)
+
+    On retourne les coups triés par score décroissant.
+    """
+    ordered = []
+    for move in moves:
+        x, y = move
+        # Critère 1 : poids de la case
+        weight = board.weights[x][y]
+
+        # Simuler le coup pour obtenir une position
+        flips = board.make_move(move, current_color)
+        # Critère 2 : mobilité adverse (moins il y a de coups pour l'adversaire, mieux c'est)
+        opp_moves = len(board.get_legal_moves(opponent(current_color)))
+        # On prend l'inverse, par exemple : -opp_moves
+        mobility_score = -opp_moves
+
+        # Critère 3 : recherche courte (évaluation de la position à profondeur 1)
+        short_eval = board.evaluate(current_color)
+
+        # On annule le coup pour restaurer le plateau
+        board.undo_move(move, flips, current_color)
+
+        # Score composite (les coefficients sont à ajuster)
+        score = weight * 1.0 + mobility_score * 2.0 + short_eval * 0.5
+        ordered.append((score, move))
+    # Tri décroissant du score
+    ordered.sort(key=lambda x: x[0], reverse=True)
+    return [move for score, move in ordered]
+
 # IA basée sur NegaMax avec élagage alpha‑bêta et optimisée avec la méthode mtd(f)
 class AIPlayer:
     def __init__(self, color, max_depth=4):
@@ -256,7 +291,7 @@ class AIPlayer:
             max_value = max(max_value, value)
             alpha = max(alpha, value)
         else:
-            legal_moves.sort(key=lambda m: board.evaluate(current_color), reverse=True)
+            legal_moves = order_moves(board, legal_moves, current_color)
             for move in legal_moves:
                 flips = board.make_move(move, current_color)
                 value = -self.nega_max(board, depth - 1, -beta, -alpha, opponent(current_color))
@@ -279,6 +314,7 @@ class AIPlayer:
         best_value = -math.inf
         first_guess = 0
         legal_moves = board.get_legal_moves(self.color)
+        legal_moves = order_moves(board, legal_moves, self.color)
         if not legal_moves:
             return None
         for move in legal_moves:
