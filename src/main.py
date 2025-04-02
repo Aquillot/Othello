@@ -1,6 +1,7 @@
 import random
 import tkinter as tk
 from PIL import Image, ImageTk
+from screeninfo import get_monitors
 
 
 from GameBoard import GameBoard
@@ -11,8 +12,8 @@ from MenuBar import MenuBar
 # Constants
 BOARD_SIZE = (8, 8)
 DEFAULT_PLAYERS = [
-    Player(symbol="🌑", name="White", color="#ffffff"),
-    Player(symbol="🌕", name="Black", color="#000000"),
+    Player(symbol="X", name="White", color="#ffffff"),
+    Player(symbol="O", name="Black", color="#000000"),
 ]
 
 # ============================
@@ -28,7 +29,7 @@ class GameController:
         self.current_player = self.players[self.current_player_index]
         self.game_won = False
         self.winner_combination = []
-        self.ai_types = ["minimax", "random", "greedy"]
+        self.ai_types = ["minimax"]
         self.player_ai_type = {player.symbol: "minimax" for player in self.players}
         self._initialize_board()
 
@@ -209,11 +210,14 @@ class OthelloApp(tk.Tk):
         self.title("Othello")
 
         # Charger l'image de fond initiale
+        monitor = get_monitors()[0]
+        screen_width = monitor.width
+        screen_height = monitor.height
         self.bg_image = Image.open("./layout/fond_bois.png")
         if hasattr(Image, 'Resampling'):
-            self.bg_image = self.bg_image.resize((self.winfo_screenwidth(), self.winfo_screenheight()), Image.Resampling.LANCZOS)
+            self.bg_image = self.bg_image.resize((screen_width,screen_height), Image.Resampling.LANCZOS)
         else:
-            self.bg_image = self.bg_image.resize((self.winfo_screenwidth(), self.winfo_screenheight()), Image.ANTIALIAS)        
+            self.bg_image = self.bg_image.resize((screen_width,screen_height), Image.ANTIALIAS)        
             
         self.bg_image = ImageTk.PhotoImage(self.bg_image)
 
@@ -228,27 +232,17 @@ class OthelloApp(tk.Tk):
         self.menu = MenuBar(self, self.controller)  # Assurez-vous que MenuBar est défini
 
         # Passer en mode plein écran
-        self.attributes("-fullscreen", True)
+        self.attributes("-fullscreen", False)
         
         # Mettre à jour la taille de la fenêtre en fonction de l'écran
-        self.update_window_size()
-
-        # Lier la touche Escape pour quitter le plein écran
-        self.bind("<Escape>", self.toggle_fullscreen)
-
-    def toggle_fullscreen(self, event=None):
-        """ Bascule le mode plein écran. """
-        current_state = self.attributes("-fullscreen")
-        self.attributes("-fullscreen", not current_state)
-        
-        # Mettre à jour la taille de la fenêtre lorsque l'on quitte ou entre en plein écran
         self.update_window_size()
 
     def update_window_size(self):
         """ Met à jour la taille de la fenêtre pour qu'elle occupe tout l'écran. """
         # Récupère la taille de l'écran
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
+        monitor = get_monitors()[0]
+        screen_width = monitor.width
+        screen_height = monitor.height
 
         # Mettre à jour la taille de la fenêtre
         self.geometry(f"{screen_width}x{screen_height}+0+0")

@@ -1,0 +1,29 @@
+## 📜 Description
+Ce projet implémente le jeu **Othello** (ou Reversi) en Python avec **Tkinter** pour l’interface graphique. Il permet à deux joueurs de s'affronter sur un plateau interactif, avec gestion des coups valides, du changement de joueur et de la détection du gagnant.
+
+## 🛠️ Installation
+Clone ce dépôt et installe les dépendances avec :
+```bash
+pip install -r requirements.txt
+```
+
+## 🎮 Utilisation
+Exécute le script principal :
+```bash
+python main.py
+```
+Le jeu démarre et affiche un plateau interactif.
+
+## 📂 Structure du Projet
+- `GameBoard.py` : Gestion du plateau et affichage des pions.
+- `Structures.py` : Définition des objets **Player** et **Move**.
+- `MenuBar.py` : Barre de menu avec options du jeu.
+- `StatusDisplay.py` : Affichage du statut du jeu.
+- `main.py` : Point d’entrée du programme.
+
+## 🚀 Fonctionnalités
+✔️ Interface graphique avec Tkinter  
+✔️ Système de gestion des coups  
+✔️ Alternance des joueurs  
+✔️ Détection automatique du gagnant  
+✔️ Chargement dynamique des pions  
