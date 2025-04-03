@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import font,PhotoImage
 from Structures import Move
 from PIL import ImageTk,Image
+
+SIZE_BOX = 1
+HEIGHT = 1
 class GameBoard(tk.Frame):
     def __init__(self, parent, controller):
         frame = tk.Frame(parent, bg="black", borderwidth=50, relief="solid")  # Bordure noire
@@ -13,8 +16,8 @@ class GameBoard(tk.Frame):
         self._initialize_gui()
         # Préchargement des images des joueurs
         self.player_images = {
-            "X": ImageTk.PhotoImage(Image.open("./layout/jeton_x.png").resize((100, 100))),
-            "O": ImageTk.PhotoImage(Image.open("./layout/jeton_o.png").resize((100, 100)))
+            "X": ImageTk.PhotoImage(Image.open("./layout/jeton_x.png").resize((50*HEIGHT, 50*HEIGHT))),
+            "O": ImageTk.PhotoImage(Image.open("./layout/jeton_o.png").resize((50*HEIGHT, 50*HEIGHT)))
         }
 
         self.pack()
@@ -23,7 +26,7 @@ class GameBoard(tk.Frame):
         for row in range(self.controller.board_size[0]):
             for col in range(self.controller.board_size[1]):
                 button = tk.Button(
-                    self, text="", font=("Noto Color Emoji",36), width=3, height=2,
+                    self, text="", font=("Noto Color Emoji",36), width=SIZE_BOX, height=HEIGHT,
                     relief="flat", highlightthickness=1, highlightbackground="black",activebackground="#1a6420", bg="#0b2b0c",
                 )
                 self.cells[button] = (row, col)

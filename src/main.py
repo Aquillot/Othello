@@ -1,7 +1,6 @@
 import random
 import tkinter as tk
 from PIL import Image, ImageTk
-from screeninfo import get_monitors
 
 
 from GameBoard import GameBoard
@@ -11,6 +10,7 @@ from MenuBar import MenuBar
 
 # Constants
 BOARD_SIZE = (8, 8)
+SCREEN_SIZE = 900
 DEFAULT_PLAYERS = [
     Player(symbol="X", name="White", color="#ffffff"),
     Player(symbol="O", name="Black", color="#000000"),
@@ -210,14 +210,11 @@ class OthelloApp(tk.Tk):
         self.title("Othello")
 
         # Charger l'image de fond initiale
-        monitor = get_monitors()[0]
-        screen_width = monitor.width
-        screen_height = monitor.height
         self.bg_image = Image.open("./layout/fond_bois.png")
         if hasattr(Image, 'Resampling'):
-            self.bg_image = self.bg_image.resize((screen_width,screen_height), Image.Resampling.LANCZOS)
+            self.bg_image = self.bg_image.resize((SCREEN_SIZE,SCREEN_SIZE), Image.Resampling.LANCZOS)
         else:
-            self.bg_image = self.bg_image.resize((screen_width,screen_height), Image.ANTIALIAS)        
+            self.bg_image = self.bg_image.resize((SCREEN_SIZE,SCREEN_SIZE0), Image.ANTIALIAS)        
             
         self.bg_image = ImageTk.PhotoImage(self.bg_image)
 
@@ -239,13 +236,9 @@ class OthelloApp(tk.Tk):
 
     def update_window_size(self):
         """ Met à jour la taille de la fenêtre pour qu'elle occupe tout l'écran. """
-        # Récupère la taille de l'écran
-        monitor = get_monitors()[0]
-        screen_width = monitor.width
-        screen_height = monitor.height
 
         # Mettre à jour la taille de la fenêtre
-        self.geometry(f"{screen_width}x{screen_height}+0+0")
+        self.geometry(f"{SCREEN_SIZE}x{SCREEN_SIZE}+0+0")
 
     def update_status(self, message, color="white"):
         self.status_display.update_status(message, color)
