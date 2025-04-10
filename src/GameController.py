@@ -14,7 +14,7 @@ from Structures import Player
 
 DEFAULT_PLAYERS = {
     "X":Player(symbol="X", name="White", color="#ffffff"),
-    "O":Player(symbol="O", name="Black", color="#000000")
+    "O":Player(symbol="O", name="Red", color="#ff0000")
 }
 
 def create_weights(size):

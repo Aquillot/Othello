@@ -55,7 +55,7 @@ def main():
     # Print rules
     print("Welcome to Othello!")
     print("The game is played on a " + str(8) + "x" + str(8) + " board.")
-    print("Turns alternate between Red (X) and Blue (O). Red goes first.")
+    print("Turns alternate between White (X) and Red (O). White goes first.")
     print("To enable AI for a player, use the Game menu.")
     print("To change the AI type, use the AI menu. (Minimax, Greedy, Random)")
 
@@ -131,9 +131,9 @@ def play_console_game():
     score_black = board.count('O')
     score_white = board.count('X')
     print("Fin de la partie")
-    print(f"Noir : {score_black} - Blanc : {score_white}")
+    print(f"Red : {score_black} - Blanc : {score_white}")
     if score_black > score_white:
-        print("Le Noir gagne !")
+        print("Le Rouge gagne !")
     elif score_white > score_black:
         print("Le Blanc gagne !")
     else:

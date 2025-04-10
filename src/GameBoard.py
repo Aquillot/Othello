@@ -108,7 +108,7 @@ class GameBoardInterface(tk.Frame):
                 score_black = self.controller.count('O')
                 score_white = self.controller.count('X')
                 if score_black > score_white:
-                    self.parent.update_status(f"{self.controller.getCurentPlayer().name} Wins! with {score_black} against {score_white}", "black")
+                    self.parent.update_status(f"{self.controller.getCurentPlayer().name} Wins! with {score_black} against {score_white}", "red")
                 elif score_black < score_white:
                     self.parent.update_status(f"{self.controller.getCurentPlayer().name} Wins! with {score_white} against {score_black}", "white")
                 else:
@@ -116,7 +116,7 @@ class GameBoardInterface(tk.Frame):
                 self.after(2000, self.parent.menu.reset_game)
             else:
                 self.controller.switch_player()
-                self.parent.update_status(f"{self.controller.getCurentPlayer().name}'s Turn")
+                self.parent.update_status(f"{self.controller.getCurentPlayer().name}'s Turn", self.controller.players[self.controller.current_color].color)
                 self.after(200, self.ai_move)
             self.update_board(self.controller.current_color)
 
