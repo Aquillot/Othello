@@ -9,23 +9,23 @@ class MenuBar(tk.Menu):
         game_menu = tk.Menu(self, tearoff=0)
         ai_menu = tk.Menu(self, tearoff=0)
         ai_red_menu = tk.Menu(ai_menu, tearoff=0)
-        ai_blue_menu = tk.Menu(ai_menu, tearoff=0)
+        ai_white_menu = tk.Menu(ai_menu, tearoff=0)
 
         game_menu.add_command(label="Play Again", command=self.reset_game)
-        game_menu.add_command(label="Toggle Red AI", command=lambda: self.toggle_ai(0))
-        game_menu.add_command(label="Toggle Blue AI", command=lambda: self.toggle_ai(1))
+        game_menu.add_command(label="Toggle WHITE AI", command=lambda: self.toggle_ai("X"))
+        game_menu.add_command(label="Toggle RED AI", command=lambda: self.toggle_ai("O"))
         ai_menu.add_cascade(label="Red AI Type", menu=ai_red_menu)
-        ai_menu.add_cascade(label="Blue AI Type", menu=ai_blue_menu)
+        ai_menu.add_cascade(label="White AI Type", menu=ai_white_menu)
         # Make Minimax the default AI type for the red player
 
         ai_red_algo = tk.StringVar()
-        ai_blue_algo = tk.StringVar()
+        ai_white_algo = tk.StringVar()
         ai_red_menu.add_radiobutton(label="Minimax", variable=ai_red_algo, value="minimax")
-        ai_blue_menu.add_radiobutton(label="Minimax", variable=ai_blue_algo, value="minimax")
+        ai_white_menu.add_radiobutton(label="Minimax", variable=ai_white_algo, value="minimax")
         ai_red_algo.set("minimax")
-        ai_blue_algo.set("minimax")
+        ai_white_algo.set("minimax")
         ai_red_algo.trace_add("write", lambda *args: self.controller.set_ai_type(0, ai_red_algo.get()))
-        ai_blue_algo.trace_add("write", lambda *args: self.controller.set_ai_type(1, ai_blue_algo.get()))
+        ai_white_algo.trace_add("write", lambda *args: self.controller.set_ai_type(1, ai_white_algo.get()))
 
         self.add_cascade(label="Game", menu=game_menu)
         self.add_cascade(label="AI", menu=ai_menu)
@@ -39,6 +39,6 @@ class MenuBar(tk.Menu):
 
     def toggle_ai(self, index):
         self.controller.toggle_ai(index)
-        if self.controller.current_player.is_ai:
-            self.parent.update_status(f"{self.controller.current_player.name}'s turn")
+        if self.controller.getCurentPlayer().is_ai:
+            self.parent.update_status(f"{self.controller.getCurentPlayer().name}'s turn")
             self.parent.game_board.ai_move()
