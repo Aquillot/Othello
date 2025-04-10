@@ -95,8 +95,21 @@ class GameBoardInterface(tk.Frame):
             print("no legal moves switching player")
             self.controller.switch_player()
             self.legal_moves = self.controller.get_legal_moves(self.controller.current_color)
+            self.parent.update_status(f"{self.controller.getCurentPlayer().name}'s Turn", self.controller.players[self.controller.current_color].color)
+            self.after(200, self.ai_move)
             if self.legal_moves == []:
-                self.parent.update_status("Game Tied!", "red")
+                score_black = self.controller.count('O')
+                score_white = self.controller.count('X')
+                if score_black > score_white:
+                    self.parent.update_status(
+                        f"{self.controller.getCurentPlayer().name} Wins! with {score_black} against {score_white}",
+                        "red")
+                elif score_black < score_white:
+                    self.parent.update_status(
+                        f"{self.controller.getCurentPlayer().name} Wins! with {score_white} against {score_black}",
+                        "white")
+                else:
+                    self.parent.update_status(f"Game Tied! {score_black}", "black")
                 self.after(2000, self.parent.menu.reset_game)
                 return
         move = move_with_color[:2]
@@ -112,7 +125,7 @@ class GameBoardInterface(tk.Frame):
                 elif score_black < score_white:
                     self.parent.update_status(f"{self.controller.getCurentPlayer().name} Wins! with {score_white} against {score_black}", "white")
                 else:
-                    self.parent.update_status("Game Tied!", "red")
+                    self.parent.update_status(f"Game Tied! {score_black}", "black")
                 self.after(2000, self.parent.menu.reset_game)
             else:
                 self.controller.switch_player()
@@ -145,11 +158,16 @@ class GameBoardInterface(tk.Frame):
                 row, col = move_pos
                 move = (row, col, self.controller.current_color)
                 self._handle_click(type('', (), {'widget': next(button for button, pos in self.cells.items() if pos == (row, col))})())
+            else:
+                self.controller.switch_player()
+                self.legal_moves = self.controller.get_legal_moves(self.controller.current_color)
+                self.parent.update_status(f"{self.controller.getCurentPlayer().name}'s Turn", self.controller.players[self.controller.current_color].color)
+                self.ai_move()
 
 
     def reset_board(self):
-        for button in self.cells.keys():
-            button.config(text="", fg="#0b2b0c", highlightbackground="#0b2b0c")
+        # Reset the board to its initial state
+        self._initialize_gui()
 
         # If the current player is an AI, make the AI move
         if self.controller.getCurentPlayer().is_ai:

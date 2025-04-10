@@ -75,6 +75,17 @@ class GameController:
     def in_bounds(self, x, y):
         return 0 <= x < self.size and 0 <= y < self.size
 
+    def reset_game(self):
+        """Réinitialise le plateau de jeu"""
+        self.grid = [['.' for _ in range(self.size)] for _ in range(self.size)]
+        mid1 = self.size // 2 - 1
+        mid2 = self.size // 2
+        self.grid[mid1][mid1] = 'X'
+        self.grid[mid1][mid2] = 'O'
+        self.grid[mid2][mid1] = 'O'
+        self.grid[mid2][mid2] = 'X'
+        self.current_color = 'O'
+
     def getCurentPlayer(self):
         return self.players[self.current_color]
 
@@ -164,6 +175,16 @@ class GameController:
 
     def toggle_ai(self, player_color):
         self.players[player_color] = self.players[player_color]._replace(is_ai=not self.players[player_color].is_ai)
+        #Si l'adversaire est une ia on passe en mode max_depth=6 sinon max_depth=8
+        if self.players[player_color].is_ai:
+            if self.players[opponent(player_color)].is_ai:
+                self.players_AI[player_color].max_depth=6
+            else :
+                self.players_AI[player_color].max_depth=8
+        #Sinon on passe en mode max_depth=8 pour l'adversaire car je ne suis plus une IA
+        else:
+            if self.players[opponent(player_color)].is_ai:
+                self.players_AI[opponent(player_color)].max_depth=8
 
     def undo_move(self, move, flips, color):
         """Annule le coup et restaure les pièces retournées"""
