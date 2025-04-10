@@ -5,8 +5,9 @@ import tkinter as tk
 from PIL import Image, ImageTk
 from StatusDisplay import StatusDisplay
 from MenuBar import MenuBar
+import time
 
-SCREEN_SIZE = 900
+SCREEN_SIZE = 1000
 
 class OthelloApp(tk.Tk):
     def __init__(self):

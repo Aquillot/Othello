@@ -110,7 +110,7 @@ class GameBoardInterface(tk.Frame):
                         "white")
                 else:
                     self.parent.update_status(f"Game Tied! {score_black}", "black")
-                self.after(2000, self.parent.menu.reset_game)
+                self.after(40000, self.parent.menu.reset_game)
                 return
         move = move_with_color[:2]
         if move in self.legal_moves:
@@ -121,12 +121,12 @@ class GameBoardInterface(tk.Frame):
                 score_black = self.controller.count('O')
                 score_white = self.controller.count('X')
                 if score_black > score_white:
-                    self.parent.update_status(f"{self.controller.getCurentPlayer().name} Wins! with {score_black} against {score_white}", "red")
+                    self.parent.update_status(f"{self.controller.getCurentPlayer().name} Wins! with {score_black} against {score_white}", "white")
                 elif score_black < score_white:
                     self.parent.update_status(f"{self.controller.getCurentPlayer().name} Wins! with {score_white} against {score_black}", "white")
                 else:
                     self.parent.update_status(f"Game Tied! {score_black}", "black")
-                self.after(2000, self.parent.menu.reset_game)
+                self.after(40000, self.parent.menu.reset_game)
             else:
                 self.controller.switch_player()
                 self.parent.update_status(f"{self.controller.getCurentPlayer().name}'s Turn", self.controller.players[self.controller.current_color].color)
