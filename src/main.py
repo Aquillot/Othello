@@ -13,15 +13,11 @@ class OthelloApp(tk.Tk):
         super().__init__()
 
         self.title("Othello")
-
-        # Charger l'image de fond initiale
-        screen_width = 800
-        screen_height = 800
         self.bg_image = Image.open("./layout/fond_bois.png")
         if hasattr(Image, 'Resampling'):
-            self.bg_image = self.bg_image.resize((screen_width, screen_height), Image.Resampling.LANCZOS)
+            self.bg_image = self.bg_image.resize((SCREEN_SIZE, SCREEN_SIZE), Image.Resampling.LANCZOS)
         else:
-            self.bg_image = self.bg_image.resize((screen_width, screen_height), Image.ANTIALIAS)
+            self.bg_image = self.bg_image.resize((SCREEN_SIZE, SCREEN_SIZE), Image.ANTIALIAS)
 
         self.bg_image = ImageTk.PhotoImage(self.bg_image)
 
