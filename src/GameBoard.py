@@ -1,9 +1,30 @@
 import tkinter as tk
 from tkinter import font,PhotoImage
 
-from PIL import ImageTk,Image
+from PIL import ImageTk,Image,ImageGrab
 
 from Structures import Move
+import datetime
+import os
+
+# Definition de la variable screenNumber
+screenNumber = 0
+
+def capture_screen():
+    global screenNumber
+    filename = f"screenshot_{screenNumber}.png"
+    screenNumber+=1
+    # Capture tout l'écran
+    screenshot = ImageGrab.grab()
+
+    # Crée un dossier 'Game1AIvsAI' si nécessaire
+    os.makedirs("../Game1AIvsAI", exist_ok=True)
+
+    # Enregistre l'image
+    screenshot.save(f"../Game1AIvsAI/{filename}")
+    print(f"Capture enregistrée : captures/{filename}")
+
+
 
 SIZE_BOX = 1
 HEIGHT = 1
@@ -36,21 +57,21 @@ class GameBoardInterface(tk.Frame):
                 button = tk.Button(
                     self, font=("Noto Color Emoji", 36), text="",image=self.transparent,
                     relief="flat", highlightthickness=1, highlightbackground="black", activebackground="#1a6420",
-                    bg="#0b2b0c",width=SIZE_BOX, height=SIZE_BOX,
+                    bg="#0b2b0c",width=SIZE_BOX, height=SIZE_BOX, command=capture_screen
                 )
                 if photo:
                     print(self.controller.grid[row][col], "coordinates", row, col)
                     button.config(
                         fg="#0b2b0c",
                         image=photo, text="", compound="center",
-                        highlightthickness=1, highlightbackground="black", width=SIZE_BOX, height=SIZE_BOX,
+                        highlightthickness=1, highlightbackground="black", width=SIZE_BOX, height=SIZE_BOX,command=capture_screen
                     )
                     button.image_ref = photo
                 if (col,row) in self.legal_moves:
                     button.config(
                         fg="#ff2b0c",
                         image=self.transparent, text="·", compound="center",
-                        highlightthickness=1, highlightbackground="black", width=SIZE_BOX, height=SIZE_BOX,
+                        highlightthickness=1, highlightbackground="black", width=SIZE_BOX, height=SIZE_BOX,command=capture_screen
                     )
                     button.image_ref = photo
                 self.cells[button] = (row, col)
@@ -74,7 +95,7 @@ class GameBoardInterface(tk.Frame):
             button.config(
                 fg="#0b2b0c",
                 image=photo, text="", compound="center",
-                highlightthickness=1, highlightbackground="black", width=SIZE_BOX, height=SIZE_BOX,
+                highlightthickness=1, highlightbackground="black", width=SIZE_BOX, height=SIZE_BOX,command=capture_screen
             )
             button.image_ref = photo
             if (row,col) in self.legal_moves:
@@ -82,12 +103,16 @@ class GameBoardInterface(tk.Frame):
                 button.config(
                     fg=colorText,
                     image=self.transparent, text="·", compound="center",
-                    highlightthickness=1, highlightbackground="black", width=SIZE_BOX, height=SIZE_BOX,
+                    highlightthickness=1, highlightbackground="black", width=SIZE_BOX, height=SIZE_BOX,command=capture_screen
                 )
                 button.image_ref = photo
 
+
+
+
     def _handle_click(self, event):
         button = event.widget
+        capture_screen()
         row, col = self.cells[button]
         move_with_color = (row, col, self.controller.current_color)
         self.legal_moves = self.controller.get_legal_moves(self.controller.current_color)
@@ -139,14 +164,14 @@ class GameBoardInterface(tk.Frame):
         button.config(
             fg="#0b2b0c",
             image=photo, compound="center", text="",
-            highlightthickness=1, highlightbackground="black",width=SIZE_BOX, height=SIZE_BOX
+            highlightthickness=1, highlightbackground="black",width=SIZE_BOX, height=SIZE_BOX,command=capture_screen
         )
         button.image_ref = photo
         for flip in flips:
             flip_button = next(b for b, pos in self.cells.items() if pos == flip)
             flip_button.config(
                 fg="#0b2b0c", image=photo, compound="center", text="",
-                highlightthickness=1, highlightbackground="black",width=SIZE_BOX, height=SIZE_BOX
+                highlightthickness=1, highlightbackground="black",width=SIZE_BOX, height=SIZE_BOX,command=capture_screen
             )
             flip_button.image_ref = photo
 
